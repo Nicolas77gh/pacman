@@ -330,6 +330,25 @@ class NeuralAgent(Agent):
                 if ghost_distance <= 2:
                     score -= 200  # Gran penalización por estar demasiado cerca
         
+        # Factor 3 (adicional 1): Distancia a la cápsula más cercana 
+        capsules = state.getCapsules()
+        if len(capsules) > 0:
+            min_capsule_distance = min([manhattanDistance(pacman_pos, cap) for cap in capsules])
+            # Usamos el inverso para que cuanto más cerca, mayor sea el premio
+            score += 15 * (1.0 / (min_capsule_distance + 1))
+
+        # Factor 4 (adicional 2): Persecución a fantasmas asustados
+        ghostStates = state.getGhostStates()
+        for ghost in ghostStates:
+            dist = manhattanDistance(pacman_pos, ghost.getPosition())
+            if ghost.scaredTimer > 0:
+                # Si está asustado, queremos estar MUY cerca (comérnoslo)
+                score += 25 * (1.0 / (dist + 1))
+            else:
+                # Si no está asustado y está demasiado cerca (distancia < 2), penalizamos fuertemente
+                if dist < 2:
+                    score -= 10
+
         # Combinar la puntuación de la red con la heurística
         neural_score = 0
         for i, action in enumerate(self.idx_to_action.values()):
