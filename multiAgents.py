@@ -106,7 +106,7 @@ class MultiAgentSearchAgent(Agent):
     """
 
     def __init__(self, evalFn = 'scoreEvaluationFunction', depth = '2'):
-        self.index = 0 # Pacman is always agent index 0
+        super().__init__()
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
 
@@ -140,7 +140,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
-
+'''
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
     Your minimax agent with alpha-beta pruning (question 3)
@@ -152,7 +152,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
-
+'''
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
@@ -510,49 +510,49 @@ class AlphaBetaNeuralAgent(MultiAgentSearchAgent):
                 total_score += probabilities[i] * 100
         return total_score
 
-def traditional_evaluation(self, state):
-    """
-    Evaluación basada en heurísticas tradicionales.
-    Incluye las 4 heurísticas (2 básicas + 2 nuevas de tu compañero).
-    """
-    score = state.getScore()
-    pacman_pos = state.getPacmanPosition()
-    food = state.getFood().asList()
-    ghost_states = state.getGhostStates()
+    def traditional_evaluation(self, state):
+        """
+        Evaluación basada en heurísticas tradicionales.
+        Incluye las 4 heurísticas (2 básicas + 2 nuevas de tu compañero).
+         """
+        score = state.getScore()
+        pacman_pos = state.getPacmanPosition()
+        food = state.getFood().asList()
+        ghost_states = state.getGhostStates()
     
-    # Factor 1: Distancia a la comida más cercana
-    if food:
-        min_food_distance = min(manhattanDistance(pacman_pos, food_pos) 
+        # Factor 1: Distancia a la comida más cercana
+        if food:
+            min_food_distance = min(manhattanDistance(pacman_pos, food_pos) 
                                for food_pos in food)
-        score += 1.0 / (min_food_distance + 1)
+            score += 1.0 / (min_food_distance + 1)
     
-    # Factor 2: Proximidad a fantasmas
-    for ghost_state in ghost_states:
-        ghost_pos = ghost_state.getPosition()
-        ghost_distance = manhattanDistance(pacman_pos, ghost_pos)
+        # Factor 2: Proximidad a fantasmas
+        for ghost_state in ghost_states:
+            ghost_pos = ghost_state.getPosition()
+            ghost_distance = manhattanDistance(pacman_pos, ghost_pos)
         
-        if ghost_state.scaredTimer > 0:
-            score += 50 / (ghost_distance + 1)
-        else:
-            if ghost_distance <= 2:
-                score -= 200
+            if ghost_state.scaredTimer > 0:
+                score += 50 / (ghost_distance + 1)
+            else:
+                if ghost_distance <= 2:
+                    score -= 200
     
-    # Factor 3: Distancia a la cápsula más cercana
-    capsules = state.getCapsules()
-    if len(capsules) > 0:
-        min_capsule_distance = min([manhattanDistance(pacman_pos, cap) for cap in capsules])
-        score += 15 * (1.0 / (min_capsule_distance + 1))
+        # Factor 3: Distancia a la cápsula más cercana
+        capsules = state.getCapsules()
+        if len(capsules) > 0:
+            min_capsule_distance = min([manhattanDistance(pacman_pos, cap) for cap in capsules])
+            score += 15 * (1.0 / (min_capsule_distance + 1))
     
-    # Factor 4: Persecución a fantasmas asustados
-    for ghost in ghost_states:
-        dist = manhattanDistance(pacman_pos, ghost.getPosition())
-        if ghost.scaredTimer > 0:
-            score += 25 * (1.0 / (dist + 1))
-        else:
-            if dist < 2:
-                score -= 10
+        # Factor 4: Persecución a fantasmas asustados
+        for ghost in ghost_states:
+            dist = manhattanDistance(pacman_pos, ghost.getPosition())
+            if ghost.scaredTimer > 0:
+                score += 25 * (1.0 / (dist + 1))
+            else:
+                if dist < 2:
+                    score -= 10
     
-    return score
+        return score
 
     def evaluationFunction(self, state):
         return self.w_heuristic * self.traditional_evaluation(state) + \
